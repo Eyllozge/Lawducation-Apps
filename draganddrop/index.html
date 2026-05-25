@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+	<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawducation | Bilgi Eşleştirme Testi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <section id="login-screen" class="container-box">
+        <div class="header">
+            <img src="logobuyuk (1).png" alt="Logo" class="logo">
+            <h2>Faz Ödevi: AI ve Hukuk</h2>
+        </div>
+        <div class="content">
+            <p>Testi başlatmak ve skorunuzu kaydetmek için adınızı giriniz.</p>
+            <input type="text" id="username" placeholder="Adınız Soyadınız" required>
+            <button onclick="startGame()" class="btn-main">Eğitime Başla</button>
+        </div>
+    </section>
+
+    <section id="game-screen" class="container-box hidden">
+        <div class="game-header">
+            <h3>Kavramları Tanımlarla Eşleştirin</h3>
+            <p>Kartları ilgili kutucuğun üzerine sürükleyip bırakın.</p>
+        </div>
+        
+        <div class="game-layout">
+            <div id="draggables" class="drag-area">
+                </div>
+            <div id="targets" class="drop-area">
+                </div>
+        </div>
+
+        <button id="submit-btn" class="btn-main hidden" onclick="finishGame()">Testi Bitir ve Kaydet</button>
+    </section>
+
+    <section id="result-screen" class="container-box hidden">
+        <div class="result-content">
+            <div id="icon-container">✅</div>
+            <h2 id="final-score"></h2>
+            <p id="status-msg">Verileriniz sisteme işleniyor...</p>
+            <button onclick="location.reload()" class="btn-secondary">Tekrar Çöz</button>
+        </div>
+    </section>
+
+    <script>
+        // Madde ekleme alanı
+        const questions = [
+            { id: 1, term: "Denetimli Öğrenme", desc: "Etiketlenmiş verilerle model eğitme yöntemidir." },
+            { id: 2, term: "Denetimsiz Öğrenme", desc: "Verideki gizli yapıları ve grupları bulmaya yarar." },
+            { id: 3, term: "Pekiştirmeli Öğrenme", desc: "Deneme-yanılma ve ödül mekanizmasıyla öğrenir." },
+            { id: 4, term: "KVKK Madde 11", desc: "İlgili kişinin haklarını düzenleyen maddedir." }
+        ];
+
+        let userName = "";
+        let score = 0;
+        let matchedCount = 0;
+
+        function startGame() {
+            userName = document.getElementById('username').value.trim();
+            if(!userName) {
+                alert("Lütfen isminizi giriniz.");
+                return;
+            }
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            initGame();
+        }
+
+        function initGame() {
+            const dragContainer = document.getElementById('draggables');
+            const targetContainer = document.getElementById('targets');
+
+            // Kartları karıştırarak oluştur
+            [...questions].sort(() => Math.random() - 0.5).forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.draggable = true;
+                card.innerText = q.term;
+                card.id = `drag-${q.id}`;
+                card.addEventListener('dragstart', (e) => e.dataTransfer.setData("text", e.target.id));
+                dragContainer.appendChild(card);
+            });
+
+            // Hedef alanları oluştur
+            questions.forEach(q => {
+                const target = document.createElement('div');
+                target.className = 'target-box';
+                target.innerHTML = `<small>Tanım:</small><p>${q.desc}</p>`;
+                target.dataset.id = q.id;
+                
+                target.ondragover = (e) => { e.preventDefault(); target.classList.add('highlight'); };
+                target.ondragleave = () => target.classList.remove('highlight');
+                target.ondrop = (e) => handleDrop(e, target);
+                
+                targetContainer.appendChild(target);
+            });
+        }
+
+        function handleDrop(e, target) {
+            e.preventDefault();
+            target.classList.remove('highlight');
+            const draggedId = e.dataTransfer.getData("text").replace('drag-', '');
+            const draggedElement = document.getElementById(`drag-${draggedId}`);
+
+            if(target.dataset.id === draggedId) {
+                target.classList.add('correct');
+                target.appendChild(draggedElement);
+                draggedElement.draggable = false;
+                score++;
+                matchedCount++;
+            } else {
+                target.classList.add('wrong');
+                setTimeout(() => target.classList.remove('wrong'), 500);
+            }
+
+            if(matchedCount === questions.length) {
+                document.getElementById('submit-btn').classList.remove('hidden');
+            }
+        }
+
+        async function finishGame() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `Skorunuz: ${score} / ${questions.length}`;
+
+            const data = {
+                ad_soyad: userName,
+                skor: `${score}/${questions.length}`,
+                tarih: new Date().toLocaleString('tr-TR')
+            };
+
+            try {
+                // SHEETDB API entegrasyonu
+                const response = await fetch('https://sheetdb.io/api/v1/1jwoh6gjaitaa', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                if(response.ok) {
+                    document.getElementById('status-msg').innerText = "Sonucunuz başarıyla kaydedildi.";
+                }
+            } catch (err) {
+                document.getElementById('status-msg').innerText = "Sistem meşgul, daha sonra tekrar deneyin.";
+            }
+        }
+    </script>
+</body>
+</html>
