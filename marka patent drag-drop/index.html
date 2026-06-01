@@ -136,26 +136,18 @@
             };
 
             try {
-                // SHEETDB API entegrasyonu
-                const response = await fetch('http://127.0.0.1:8000/skor-kaydet', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                if(response.ok) {
-                    document.getElementById('status-msg').innerText = "Sonucunuz başarıyla kaydedildi.";
-                }
-            } catch (err) {
-                document.getElementById('status-msg').innerText = "Sistem meşgul, daha sonra tekrar deneyin.";
+                fetch('/skor-kaydet', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ skor: skorDegeri })
+})
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
             }
-        }
     </script>
-</body>
-
-</html>
-
-
-
 </body>
 
 </html>

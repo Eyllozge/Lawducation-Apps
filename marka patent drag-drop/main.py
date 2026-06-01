@@ -3,10 +3,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from database import create_table, save_score, get_all_scores
 
+handler=app
 app = FastAPI()
 create_table()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 class ScoreData(BaseModel):
     ad_soyad: str
