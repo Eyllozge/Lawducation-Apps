@@ -1,36 +1,53 @@
-import sqlite3
+import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_connection():
-    # scores.db adında bir veritabanı dosyası oluşturur
-    # dosya yoksa otomatik yaratır
-    conn = sqlite3.connect("scores.db")
-    return conn
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        raise ValueError("HATA: DATABASE_URL bulunamadı! .env dosyanı kontrol et.")
+    return psycopg2.connect(db_url)
 
 def create_table():
     conn = get_connection()
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS scores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ad_soyad TEXT,
-            skor TEXT,
-            tarih TEXT
-        )
-    """)
-    conn.commit()
-    conn.close()
+    try:
+        cur = conn.cursor()
+        # skor INTEGER, tarih DATE (veya TIMESTAMP) olarak değiştirildi.
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS scores (
+                id SERIAL PRIMARY KEY,
+                ad_soyad TEXT,
+                skor INTEGER,
+                tarih DATE
+            )
+        """)
+        conn.commit()
+    finally:
+        cur.close()  # Cursor kapatıldı
+        conn.close() # Hata olsa bile bağlantı kesinlikle kapatılacak
 
 def save_score(ad_soyad, skor, tarih):
     conn = get_connection()
-    conn.execute(
-        "INSERT INTO scores (ad_soyad, skor, tarih) VALUES (?, ?, ?)",
-        (ad_soyad, skor, tarih)
-    )
-    conn.commit()
-    conn.close()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO scores (ad_soyad, skor, tarih) VALUES (%s, %s, %s)",
+            (ad_soyad, int(skor), tarih) # skor'u integer'a çeviriyoruz
+        )
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
 
 def get_all_scores():
     conn = get_connection()
-    cursor = conn.execute("SELECT ad_soyad, skor, tarih FROM scores")
-    rows = cursor.fetchall()
-    conn.close()
-    return rows
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT ad_soyad, skor, tarih FROM scores")
+        rows = cur.fetchall()
+        return rows
+    finally:
+        cur.close()
+        conn.close()
