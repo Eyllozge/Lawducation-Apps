@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/skor-kaydet",
       "destination": "/main.py"
     },
     {
-      "source": "/(.*)",
+      "source": "/skorlar",
       "destination": "/main.py"
     }
   ]
