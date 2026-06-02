@@ -2,16 +2,20 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from database import create_table, save_score, get_all_scores
 
-
 app = FastAPI()
-handler=app
-create_table()
-
+handler = app
 
 class ScoreData(BaseModel):
     ad_soyad: str
-    skor: str
+    skor: int
     tarih: str
+
+@app.on_event("startup")
+def startup():
+    try:
+        create_table()
+    except Exception as e:
+        print(f"create_table hatası: {e}")
 
 @app.post("/skor-kaydet")
 def skor_kaydet(data: ScoreData):
