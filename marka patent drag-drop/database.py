@@ -27,13 +27,13 @@ def create_table():
         cur.close()
         conn.close()
 
-def save_score(ad_soyad, skor, tarih):
+def save_score(ad_soyad, skor, toplam, tarih):
     conn = get_connection()
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO scores (ad_soyad, skor, tarih) VALUES (%s, %s, %s)",
-            (ad_soyad, skor, tarih)  # int() dönüşümü yok
+            "INSERT INTO scores (ad_soyad, skor, toplam, tarih) VALUES (%s, %s, %s, %s)",
+            (ad_soyad, skor, toplam, tarih)
         )
         conn.commit()
     finally:
