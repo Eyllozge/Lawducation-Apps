@@ -12,7 +12,7 @@
     <section id="login-screen" class="container-box">
         <div class="header">
             <img src="logobuyuk (1).png" alt="Logo" class="logo">
-            <h2>Faz Ödevi: Ceza Hukukunun Temel Prensipleri</h2>
+            <h2>Faz Ödevi: Marka Patent Hukuku</h2>
         </div>
         <div class="content">
             <p>Testi başlatmak ve skorunuzu kaydetmek için adınızı giriniz.</p>
@@ -49,13 +49,11 @@
     <script>
         // Madde ekleme alanı
         const questions = [
-            { id: 1, term: "Kanunilik İlkesi", desc: "Mehmet, 2023 yılında işlediği bir fiil nedeniyle hakkında dava açılır. Ancak o tarihte yürürlükte bulunan kanunda bu fiil suç olarak düzenlenmemiştir. 2025 yılında yapılan kanun değişikliğiyle söz konusu fiil suç haline getirilmiştir. Mahkeme, yeni kanuna dayanarak Mehmet’i cezalandırmak istemektedir. Bu olayda, avukat olduğunuzu varsayarak hazırlayacağınız savunma dilekçesinde ceza hukukunun hangi temel ilkesinin ihlal edildiğini ileri sürebileceğinizi değerlendiriniz." },
-            { id: 2, term: "Kusur İlkesi", desc: "Ayşe, akıl hastalığı nedeniyle işlediği fiilin hukuki anlam ve sonuçlarını algılayamayacak durumdadır. Buna rağmen mahkeme tarafından hapis cezasına mahkûm edilmek istenmektedir. Bu olayda, müdafi sıfatıyla kaleme alacağınız savunma dilekçesinde ceza sorumluluğunun temelini oluşturan hangi ilkeye dayanmanız gerektiğini belirtiniz." },
-            { id: 3, term: "Şahsilik İlkesi", desc: "Bir şirkette muhasebeci olarak çalışan Ali zimmet suçu işler. Şirket sahibi ise yalnızca suçun kendi şirketinde işlenmiş olması gerekçe gösterilerek, olaydan haberi olmamasına rağmen cezalandırılmak istenir. Bu durumda, savunma makamı olarak sunacağınız dilekçede ceza sorumluluğunun kapsamına ilişkin hangi temel ilkeye dayanacağınızı açıklayınız." },
-            { id: 4, term: "Masumiyet Karinesi", desc: "Bir kişi hakkında ağır ceza mahkemesinde yargılama devam etmektedir ve henüz kesinleşmiş bir hüküm bulunmamaktadır. Buna rağmen bir kamu kurumu, kişiyi “suçlu” ilan ederek görevine son verir ve kamuoyuna bu yönde açıklama yapar. Bu olayda, vekil sıfatıyla hazırlayacağınız dilekçede hangi temel ceza hukuku ilkesinin ihlal edildiğini ileri sürebileceğinizi değerlendiriniz." },
-			{ id: 5, term: "Orantılılık İlkesi", desc: "Bir kişi, marketten 50 TL değerinde bir ürün çalmıştır. Mahkeme, bu fiil nedeniyle sanığa 20 yıl hapis cezası vermiştir. Bu durumda, müdafi olarak sunacağınız savunma dilekçesinde verilen cezanın niteliğine karşı hangi temel ilkeye aykırılık iddiasında bulunabileceğinizi belirtiniz." },
-			{ id: 6, term: "Aleyhe Kıyas Yasağı", desc: "Kanunda “bilişim sistemine girme” suçu düzenlenmiştir. Ancak bir kişi, kanunda açıkça suç olarak tanımlanmamış bir dijital davranışta bulunur. Mahkeme, bu fiilin mevcut suça benzediğini belirterek kıyas yoluyla cezalandırma yoluna gider. Bu olayda, savunma dilekçenizde ceza hukukunda yorum ve kıyas sınırlarına ilişkin hangi temel ilkenin ihlal edildiğini ileri sürebileceğinizi değerlendiriniz." },
-        ];
+            { id: 1, term: "Bir işletmenin mal veya hizmetlerini başka işletmelerden ayırmaya yarayan isim, logo, slogan, şekil veya işaretlerdir. Ayırt edici olması gerekir. Örneğin bir kahve markasının adı ve logosu marka korumasına girer.", desc: "Marka" },
+            { id: 2, term: "Yeni, buluş niteliği taşıyan ve sanayiye uygulanabilen teknik çözümlere verilen korumadır. Buluş sahibine belirli süre üretme, kullanma ve satma hakkı tanır. Yenilik ve buluş basamağı şarttır.", desc: "Patent" },
+            { id: 3, term: "Teknik buluşları koruyan ancak patente göre daha kolay ve hızlı alınabilen bir koruma türüdür. Küçük teknik geliştirmeler veya pratik yenilikler için tercih edilir. Patentten farklı olarak “buluş basamağı” şartı daha esnektir.", desc: "Faydalı Model" },
+    
+            ];
 
         let userName = "";
         let score = 0;
@@ -129,24 +127,37 @@
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('final-score').innerText = `Skorunuz: ${score} / ${questions.length}`;
 
+            // Göndermek için hazırladığın veri nesnesi
             const data = {
                 ad_soyad: userName,
-                skor: `${score}/${questions.length}`,
+                skor: score,
+                toplam: questions.length,
                 tarih: new Date().toLocaleString('tr-TR')
             };
 
             try {
-                fetch('/skor-kaydet', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ skor: skorDegeri })
-})
-  .then(res => res.json())
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
+                // Fetch isteği
+                const response = await fetch('/skor-kaydet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) // Tanımsız skorDegeri yerine hazırladığımız 'data' nesnesini koyduk
+                });
+
+                if (!response.ok) {
+                    throw new Error("Sunucu yanıt vermedi.");
+                }
+
+                const sonuc = await response.json();
+                console.log("Kayıt başarılı:", sonuc);
+                document.getElementById('status-msg').innerText = "Verileriniz sisteme başarıyla işlendi!";
+
+            } catch (err) {
+                console.error("Kayıt hatası:", err);
+                document.getElementById('status-msg').innerText = "Kayıt yapılamadı. Lütfen bağlantınızı kontrol edin.";
             }
+        }
     </script>
 </body>
 

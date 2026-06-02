@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from database import create_table, save_score, get_all_scores
 
-handler=app
+
 app = FastAPI()
+handler=app
 create_table()
 
 
