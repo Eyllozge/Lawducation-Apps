@@ -8,6 +8,7 @@ handler = app
 class ScoreData(BaseModel):
     ad_soyad: str
     skor: int
+    toplam: int
     tarih: str
 
 @app.on_event("startup")
@@ -19,7 +20,7 @@ def startup():
 
 @app.post("/skor-kaydet")
 def skor_kaydet(data: ScoreData):
-    save_score(data.ad_soyad, data.skor, data.tarih)
+    save_score(data.ad_soyad, data.skor, data.toplam, data.tarih)
     return {"mesaj": "Kaydedildi"}
 
 @app.get("/skorlar")
