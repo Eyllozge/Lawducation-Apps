@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from database import create_table, save_score, get_all_scores
+from api.database import create_table, save_score, get_all_scores
 
 app = FastAPI()
 handler = app
