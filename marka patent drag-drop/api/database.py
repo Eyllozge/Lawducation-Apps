@@ -15,13 +15,14 @@ def create_table():
     try:
         cur = conn.cursor()
         cur.execute("""
-    CREATE TABLE IF NOT EXISTS scores (
-        id SERIAL PRIMARY KEY,
-        ad_soyad TEXT,
-        skor INTEGER,
-        tarih TEXT
-    )
-""")
+            CREATE TABLE IF NOT EXISTS scores (
+                id SERIAL PRIMARY KEY,
+                ad_soyad TEXT,
+                skor INTEGER,
+                toplam INTEGER,
+                tarih TEXT
+            )
+        """)
         conn.commit()
     finally:
         cur.close()
@@ -44,7 +45,7 @@ def get_all_scores():
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT ad_soyad, skor, tarih FROM scores")
+        cur.execute("SELECT ad_soyad, skor, toplam, tarih FROM scores")
         rows = cur.fetchall()
         return rows
     finally:
