@@ -13,7 +13,7 @@ handler = app
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # deploy'da kendi domain'inle kısıtla
+    allow_origins=["https://lawducation-apps.vercel.app/"],   # deploy'da kendi domain'inle kısıtla
     allow_methods=["POST"],
     allow_headers=["*"],
 )
