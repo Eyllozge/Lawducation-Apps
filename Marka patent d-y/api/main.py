@@ -1,23 +1,20 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from database import supabase  
-
+from database import supabase
 
 app = FastAPI()
-handler = app
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://lawducation-apps.vercel.app"],   
+    allow_origins=["https://lawducation-apps.vercel.app"],
     allow_methods=["POST"],
     allow_headers=["*"],
 )
-
 
 class QuizSubmit(BaseModel):
     isim_soyisim: str
