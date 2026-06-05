@@ -1,8 +1,14 @@
 {
-  "rewrites": [
+  "builds": [
     {
-      "source": "/submit",
-      "destination": "/api/main.py"
+      "src": "api/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/submit",
+      "dest": "api/main.py"
     }
   ]
 }

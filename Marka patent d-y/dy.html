@@ -286,7 +286,7 @@
        FastAPI endpoint — kendi URL'inizi buraya yazın.
        POST /submit  →  { "name": "...", "date": "..." }
     ──────────────────────────────────────────────────── */
-    const API_URL = 'http://localhost:8000/submit';
+    const API_URL = 'https://lawducation-apps.vercel.app/submit';
  
     /* ── STATE ─────────────────────────────────────────── */
     let userName = '';
@@ -294,7 +294,7 @@
     /* ── DOM REFS ──────────────────────────────────────── */
     const loginScreen = document.getElementById('loginScreen');
     const quizScreen  = document.getElementById('quizScreen');
-    const nameInput   = document.getElementById('nameInput');
+    const nameInput   = document.getElementById('isim_soyisim');
     const loginError  = document.getElementById('loginError');
     const startBtn    = document.getElementById('startBtn');
     const quizItems   = document.querySelectorAll('.quiz-item');
@@ -306,10 +306,10 @@
     nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') startQuiz(); });
  
     function startQuiz() {
-      const val = nameInput.value.trim();
+      const val = isim_soyisim.value.trim();
       if (!val) {
         loginError.textContent = 'Lütfen adınızı ve soyadınızı giriniz.';
-        nameInput.focus();
+        isim_soyisim.focus();
         return;
       }
       loginError.textContent = '';
@@ -362,7 +362,7 @@
       submitBtn.textContent = 'Kaydediliyor…';
  
       const payload = {
-        name: userName,
+        isim_soyisim: isim_soyisim.value.trim(),
         date: new Date().toISOString()   // örn. "2025-06-05T14:32:00.000Z"
       };
  
