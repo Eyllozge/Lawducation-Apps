@@ -286,7 +286,7 @@
        FastAPI endpoint — kendi URL'inizi buraya yazın.
        POST /submit  →  { "name": "...", "date": "..." }
     ──────────────────────────────────────────────────── */
-    const API_URL ='https://lawducation-apps-kagu5hhqw-eyllozges-projects.vercel.app/submit'; /*düzeltme yapılacak*/
+    const API_URL ='https://marka_patentdy.vercel.app';
  
     /* ── STATE ─────────────────────────────────────────── */
     let userName = '';
@@ -363,7 +363,7 @@
  
       const payload = {
         isim_soyisim: isim_soyisim.value.trim(),
-        date: new Date().toISOString()   // örn. "2025-06-05T14:32:00.000Z"
+        date: new Date().toISOString()   
       };
  
       try {
